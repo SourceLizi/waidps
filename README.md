@@ -13,3 +13,6 @@ Blog - http://syworks.blogspot.com/2014/04/waidps-wireless-auditing-intrusion.ht
 
 Fans Page - https://www.facebook.com/syworks
 
+Fix For "No Wireless extension" error
+======
+Modify on 2018.12.9
