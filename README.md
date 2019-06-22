@@ -16,3 +16,9 @@ Fans Page - https://www.facebook.com/syworks
 Fix For "No Wireless extension" error
 ======
 Modify on 2018.12.9
+
+Update
+======
++now you can run oui.py to update oui
++latest oui data
++fix the bug of incomplete station probe display

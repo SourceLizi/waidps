@@ -187,7 +187,7 @@ def CheckAdmin():
 ##import subprocess, signal
 ##timefmt="%Y-%m-%d %H:%M:%S"
 ##__builtin__.DumpProc=""
-##appdir="/.SYWorks/WAIDPS/"
+##appdir="/SYWorks/WAIDPS/"
 ##tmpdir=appdir + "tmp/"
 ##__builtin__.Client_CSV=tmpdir + "Dumps-Client.csv"
 ##title=fcolor.BGreen + "Stn.DeAuth - V1.0, Written by SYChua (25/04/2014)"
@@ -285,7 +285,7 @@ def CheckAdmin():
 ##    bssid=""
 ##ProcTitle="WIPS - Monitoring MAC " + str(client)
 ##conf.verb = 0
-##tmpdir="/.SYWorks/WAIDPS/tmp/"
+##tmpdir="/SYWorks/WAIDPS/tmp/"
 ##tmpfile=tmpdir + "StnDeauth_" + str(client).replace(":","")
 ##TerminatingProc(ProcTitle)
 ##print title
@@ -9481,6 +9481,7 @@ def GetInterfaceList(cmdMode):
     for line in proc.communicate()[0].split('\n'):
         if len(line) == 0: continue
 	if ord(line[0]) != 32:
+        #MODIFY:find not ' ' but ':'
             IFACE = line[:line.find(':')]
             IFACE2=IFACE[:2].upper()
             if IFACE2!="ET" and IFACE2!="LO" and IFACE2!="VM" and IFACE2!="PP" and IFACE2!="AT" and IFACE2!="EN":
@@ -11644,7 +11645,7 @@ def ReadCommand():
             print spacing + fcolor.BBlue + "[OPEN] Function"
             print spacing + fcolor.SWhite + "Open function allow user to open a specified file with default text viewer and wireshark."
             print spacing + fcolor.BWhite + "Examples :"
-            print spacing + fcolor.SWhite + "          OPEN /.SYWorks/Saved/AnalysedPacket.txt " + fcolor.SGreen + " - Open the specified file"
+            print spacing + fcolor.SWhite + "          OPEN /SYWorks/Saved/AnalysedPacket.txt " + fcolor.SGreen + " - Open the specified file"
             print spacing + fcolor.SWhite + "          OPEN Attack_Captured.cap\t\t " + fcolor.SGreen + " - Open the pcap file with Wireshark"
         else:
             FName=str(usr_resp_n)[5:]
@@ -11672,7 +11673,7 @@ def ReadCommand():
             print spacing + fcolor.BBlue + "[BACKUP] Function"
             print spacing + fcolor.SWhite + "Backup function is use to backup the selected file and rewite the existing file as new."
             print spacing + fcolor.BWhite + "Examples :"
-            print spacing + fcolor.SWhite + "          BACKUP /.SYWorks/Database/Cautious.log" + fcolor.SGreen + " - Backup the specified file"
+            print spacing + fcolor.SWhite + "          BACKUP /SYWorks/Database/Cautious.log" + fcolor.SGreen + " - Backup the specified file"
         else:
             FName=str(usr_resp_n)[7:]
             FileExist=0
@@ -12446,7 +12447,7 @@ def ReadCommand():
             print spacing + fcolor.BWhite + "Example :"
             print spacing + fcolor.SWhite + "          LOAD FILTER\t\t\t  " + fcolor.SGreen + " - Load the saved filter configuration file"
             print spacing + fcolor.SWhite + "          LOAD NEW\t\t\t  " + fcolor.SGreen + " - Load existing captured packets."
-            print spacing + fcolor.SWhite + "          LOAD /.SYWorks/Saved/MyPacket.cap" + fcolor.SGreen + " - Load the specified pcap file."
+            print spacing + fcolor.SWhite + "          LOAD /SYWorks/Saved/MyPacket.cap" + fcolor.SGreen + " - Load the specified pcap file."
             print spacing + fcolor.BWhite + "Related :"
             print spacing + fcolor.SWhite + "          RELOAD\t\t\t  " + fcolor.SGreen + " - Reload the previous captured PCAP file."
         else:
@@ -12635,7 +12636,11 @@ def ReadCommand():
                 fmac=fmac[:-4]
                 dfmac=dfmac[:-1]
                 printl (tabspacefull + fcolor.SGreen + "Saving MAC filtered pcap file...","0","")
-                ps=subprocess.Popen("tshark -r " + str(__builtin__.CurrentPacket) + " -R '" +  str(fmac) + "' -w " + savedir + NewFilteredCapFile + "" , shell=True, stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))	
+                #MODIFY:Fix command out of order
+                ps=subprocess.Popen("tshark -r " + str(__builtin__.CurrentPacket)  + " -w " + savedir + NewFilteredCapFile +  " '"+str(fmac)+"'", shell=True, stdout=subprocess.PIPE, stderr=open(os.devnull, 'w')) 
+                #ps=subprocess.Popen("tshark -r " + str(__builtin__.CurrentPacket) + " -R '" +  str(fmac) + "' -w " + savedir + NewFilteredCapFile + "" , shell=True, stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))	
+                #For debug information
+                #print "tshark -r " + str(__builtin__.CurrentPacket) + " -R '" +  str(fmac) + "' -w " + savedir + NewFilteredCapFile
                 printl (tabspacefull + fcolor.SGreen + "Filtered PCap file saved " + fcolor.SRed +  str(savedir + NewFilteredCapFile) + fcolor.SGreen + " - MAC filtered : " + str(dfmac) ,"0","")
         else:
             print tabspacefull + fcolor.SRed + "No filter found.. Saving of filtered result files bypassed.."
@@ -13046,7 +13051,11 @@ def SaveFilteredMAC(MACList,sFile,sDir):
     fmac=fmac[:-4]
     dfmac=dfmac[:-3]
     printl (spacing + fcolor.SGreen + "Saving MAC filtered pcap file..." + fcolor.BRed + SaveFile,"0","")
-    ps=subprocess.Popen("tshark -r " + str(__builtin__.CurrentPacket) + " -R '" +  str(fmac) + "' -w " + SaveFile + "" , shell=True, stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))	
+    #MODIFY:Fix command out of order
+    ps=subprocess.Popen("tshark -r " + str(__builtin__.CurrentPacket) + " -w " + SaveFile  + " '" +str(fmac)+ "'", shell=True, stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))    
+    #ps=subprocess.Popen("tshark -r " + str(__builtin__.CurrentPacket) + " -R '" +  str(fmac) + "' -w " + SaveFile + "" , shell=True, stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))
+    #For debug information
+    #print spacing + fcolor.SGreen + "tshark -r " + str(__builtin__.CurrentPacket) + " -R '" +  str(fmac) + "' -w " + SaveFile + "" 	
     printl (spacing + fcolor.SGreen + "Filtered PCap file saved " + fcolor.SRed +  str(SaveFile) + fcolor.SGreen + " - MAC filtered : " + str(dfmac) ,"0","")
     print ""
 
@@ -16462,8 +16471,10 @@ def ExtractClient():
                     completed=Percent(linecount / float(__builtin__.TotalLine),2)
                     printl (spacing + fcolor.SGreen + "Extracting Stations Information... - " + str(completed),"0","")
                     lineblock=0
-                line=line.replace("\n","").replace("\00","").replace("\r","")
+                line=line.replace("\n","").replace("\0","").replace("\r","")
                 if len(line)>=94:
+                    #For debug information
+                    #print str(line)  
                     line=line + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
                     st = list(line)
                     st[18]=";"
@@ -16471,10 +16482,12 @@ def ExtractClient():
                     st[60]=";"
                     st[65]=";"
                     st[75]=";"
-                    st[94]=";"
+                    #MODIFY:Offset error
+                    st[93]=";"
                     lp="".join(st)
                     lp=lp.replace(",;","; ")
                     LineList=lp.split(";")
+
                     STATION=LineList[0]
                     if len(STATION)==17:
                         foundloc=FindMACIndex(STATION,ListInfo_BSSID)
@@ -18323,11 +18336,11 @@ __builtin__.TIMES_BEFORE_UPDATE_STN_DB=5
 __builtin__.UPDATE_STN_COUNT=0
 __builtin__.TimeStart=""
 __builtin__.TimeEnd=""
-appdir="/.SYWorks/WAIDPS/"
-dbdir="/.SYWorks/Database/"
-savedir="/.SYWorks/Saved/"
-attackdir="/.SYWorks/Captured/Attack/"
-mondir="/.SYWorks/Captured/Monitoring/"
+appdir="/SYWorks/WAIDPS/"
+dbdir="/SYWorks/Database/"
+savedir="/SYWorks/Saved/"
+attackdir="/SYWorks/Captured/Attack/"
+mondir="/SYWorks/Captured/Monitoring/"
 tmpdir=appdir + "tmp/"
 __builtin__.currentdir=""
 PathList = ['tmp/']
